@@ -11,12 +11,13 @@ This project sets up an Apache Guacamole remote desktop gateway environment usin
 
 ## Project Structure
 
+```text
 .
 ├── docker-compose.yml
 ├── initdb.sql
 └── nginx
 └── nginx.conf
-
+```
 
 ---
 
@@ -44,15 +45,16 @@ This project sets up an Apache Guacamole remote desktop gateway environment usin
 
 
 git clone https://github.com/amirhashemi021/guac-project.git
-cd guacamole-project
 
-3. Generate the Guacamole Database Schema
+    cd guacamole-project
+
+### 3. Generate the Guacamole Database Schema
 
 Before launching the full stack, you need to generate the SQL schema file that initializes the PostgreSQL database for Guacamole.
 
 Run the following command once to create initdb.sql:
 
-docker run --rm guacamole/guacamole /opt/guacamole/bin/initdb.sh --postgresql > initdb.sql
+    docker run --rm guacamole/guacamole /opt/guacamole/bin/initdb.sh --postgresql > initdb.sql
 
 This command:
 
@@ -64,21 +66,21 @@ This command:
 
     Note: This file is used in the next step to populate the database.
 
-4. Initialize the Database Schema
+### 4. Initialize the Database Schema
 
 Now start only the database container and load the schema:
 
-# Start only PostgreSQL
-docker compose up -d postgres
+    Start only PostgreSQL:
+    docker compose up -d postgres
 
-# Wait a few seconds for PostgreSQL to be ready
+    Wait a few seconds for PostgreSQL to be ready
 
-# Import the schema into the database
-cat initdb.sql | docker exec -i guacamole-project-postgres-1 psql -U guac_admin -d guacamole_db
+     Import the schema into the database:
+    cat initdb.sql | docker exec -i guacamole-project-postgres-1 psql -U guac_admin -d guacamole_db
 
-5. Start the Full Stack
+### 5. Start the Full Stack
 
-docker compose up -d
+    docker compose up -d
 
 Containers:
 
@@ -92,7 +94,7 @@ Containers:
 
     nginx — Reverse proxy/load balancer
 
-Accessing the Web UI
+## Accessing the Web UI
 
 Open a browser and visit:
 
@@ -104,19 +106,19 @@ Open a browser and visit:
 
 Default credentials:
 
-Username: guacadmin
-Password: guacadmin
+    Username: guacadmin
+    Password: guacadmin
 
-NGINX Configuration Explained
+## NGINX Configuration Explained
 
 Located at nginx/nginx.conf:
-
+```
 upstream guacamole_servers {
     ip_hash;
     server guac-server-1:8080;
     server guac-server-2:8080;
 }
-
+```
     ip_hash: Ensures that the same client IP is always routed to the same backend server (useful for session stickiness).
 
     Load balances requests between the two Guacamole instances.
@@ -129,7 +131,7 @@ Handles:
 
     Redundancy (if one Guacamole server fails, NGINX routes to the other)
 
-Administration
+## Administration
 
 Using any of the three URLs above, once logged in as guacadmin, you can:
 
@@ -141,7 +143,7 @@ Using any of the three URLs above, once logged in as guacadmin, you can:
 
 All changes are stored in PostgreSQL, meaning both Guacamole servers are always in sync since they share the same database.
 
-Persistent Data
+## Persistent Data
 
 The following volume is used:
 
@@ -149,9 +151,9 @@ The following volume is used:
 
 If you ever want a clean slate:
 
-docker compose down -v
+    docker compose down -v
 
-Security Recommendations
+## Security Recommendations
 
     Change the default guacadmin credentials immediately.
 
@@ -161,7 +163,7 @@ Security Recommendations
 
     Restrict exposed ports in production (e.g., 8080/8081 may not be needed if using NGINX only).
 
-Extending the Stack
+## Extending the Stack
 
     Add more Guacamole servers in docker-compose.yml and nginx.conf
 
@@ -171,17 +173,17 @@ Extending the Stack
 
     Use Docker secrets for storing sensitive credentials (optional)
 
-Cleanup
+## Cleanup
 
 To remove all containers and volumes:
 
-docker compose down -v
+    docker compose down -v
 
-License
+## License
 
 This project is for educational and internal use only. Apache Guacamole is licensed under the Apache License v2.0.
 
-Questions?
+## Questions?
 If you run into issues or need improvements (e.g., HTTPS setup, LDAP integration, multi-user permissions), feel free to open an issue or ask.
 
 
