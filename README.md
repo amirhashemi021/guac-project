@@ -107,7 +107,7 @@ Default credentials:
 Username: guacadmin
 Password: guacadmin
 
-⚙️ NGINX Configuration Explained
+NGINX Configuration Explained
 
 Located at nginx/nginx.conf:
 
